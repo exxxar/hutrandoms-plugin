@@ -1,5 +1,11 @@
    var data = [];
-
+    function getConsole(a){
+        switch(a){
+            default:
+            case "1": return "XBOX";
+            case "2": return "PS4";
+        }
+    }
    $(document).ready(function () {
        $('select').formSelect();
        $('.tabs').tabs();
@@ -60,13 +66,17 @@
 
                for (var i in tmp.list) {
 
-                   var curentProcent = (tmp.list[i].free_places / tmp.list[i].places) * 100;
+                   var curentProcent = (tmp.list[i].occupied_places / tmp.list[i].places) * 100;
                    $("#my-card-list").append(`\
                         <div class="item">\
                             <div class="wrapper">\   
                                 ${tmp.list[i].card_code}\
                             </div>\
                             <div class="controlls">\
+                                <div class="console-type">
+                                    <p>${getConsole(tmp.list[i].console)}</p>
+                                </div>
+                                <button class="btn"><i class="material-icons">apps</i></button>
                                 <button class="modal-trigger card-info-btn btn" data-target="card-edit"><i class="material-icons">edit</i></button>\
                                 <div class="loading">\
                                     <div class="progress-line" style="width:${curentProcent}%"></div>\
@@ -77,7 +87,7 @@
                    `);
 
                }
-
+            
            });
        });
 
@@ -101,19 +111,21 @@
            btn.css({
                "background-color": "#989898"
            });
+
            $.post($("#server-path").attr("src") + "search.php", {
                option: "addcard",
                id: $(this).attr("data-id"),
                card: $(this).attr("data-card"),
                league: $(this).attr("data-league"),
                player: $(this).attr("data-player"),
-               salary: $("#salary" + $(this).attr("data-id")).val(),
-               places: $("#places" + $(this).attr("data-id")).val()
+               cost: $("#cost" + $(this).attr("data-id")).val(),
+               places: $("#places" + $(this).attr("data-id")).val(),
+               console:$("[name='console" + $(this).attr("data-id")+"']:checked").val()
            }).then(function (a, b) {
                btn.css({
                    "background-color": "#CDDC39"
                });
-               $(".refresh-cards").click();
+               $("#refresh-cards").click();
            });
        });
 
@@ -218,11 +230,28 @@
                                     <td><a class="player-popup-hint" data-id="${data[k].id}">${data[k].Player}</a></td>\
                                     <td>${data[k].salary}</td>\
                                     <td>${data[k].OVR}</td>\
-                                    <td><input type="number" id="salary${data[k].id}" value="${data[k].salary}"></td>\
+                                    <td><input type="number" id="cost${data[k].id}" value="${data[k].salary}"></td>\
                                     <td><input type="number" id="places${data[k].id}" min="1" value="1"></td>\
-                                    <td><button class="btn add-card" data-id="${data[k].id}" data-card="${data[k].Card}" data-league="${data[k].League}" data-player="${data[k].Player}" >Добавить</button></td>\
+                                    <td>\
+                                        <div class="row">\
+                                            <div class="col s6">\
+                                                <label>\
+                                                    <input class="with-gap" name="console${data[k].id}" type="radio" value="2" />\
+                                                    <span>PS4</span>\
+                                                  </label>\
+                                            </div>\
+                                            <div class="col s6">\
+                                                <label>\
+                                                    <input class="with-gap" name="console${data[k].id}" type="radio" value="1" />\
+                                                    <span>XBOX</span>\
+                                                  </label>\
+                                            </div>\
+                                        </div>\
+                                    </td>\
+                                    <td><button class="btn add-card" data-id="${data[k].id}" data-card="${data[k].Card}" data-league="${data[k].League}" data-player="${data[k].Player}" ><i class="material-icons">add</i></button></td>\
                                 </tr>`;
                    $('#cards-table').append(multiline);
+                
                }
            }
        });
@@ -259,11 +288,28 @@
                                     <td><a class="player-popup-hint" data-id="${data[k].id}">${data[k].Player}</a></td>\
                                     <td>${data[k].salary}</td>\
                                     <td>${data[k].OVR}</td>\
-                                    <td><input type="number" id="salary${data[k].id}" value="${data[k].salary}"></td>\
+                                    <td><input type="number" id="cost{data[k].id}" value="${data[k].salary}"></td>\
                                     <td><input type="number" id="places${data[k].id}" min="1" value="1"></td>\
-                                    <td><button class="btn add-card" data-id="${data[k].id}" data-card="${data[k].Card}" data-league="${data[k].League}" data-player="${data[k].Player}" >Добавить</button></td>\
+                                   <td>\
+                                        <div class="row">\
+                                            <div class="col s6">\
+                                                <label>\
+                                                    <input class="with-gap" name="console${data[k].id}" type="radio" value="2" />\
+                                                    <span>PS4</span>\
+                                                  </label>\
+                                            </div>\
+                                            <div class="col s6">\
+                                                <label>\
+                                                    <input class="with-gap" name="console${data[k].id}" type="radio" value="1" />\
+                                                    <span>XBOX</span>\
+                                                  </label>\
+                                            </div>\
+                                        </div>\
+                                    </td>\
+                                    <td><button class="btn add-card" data-id="${data[k].id}" data-card="${data[k].Card}" data-league="${data[k].League}" data-player="${data[k].Player}" ><i class="material-icons">add</i></button></td>\
                                 </tr>`;
                        $('#cards-table').append(multiline);
+                     
                    }
                }
 

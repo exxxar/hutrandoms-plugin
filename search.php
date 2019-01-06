@@ -100,9 +100,10 @@ $result = "";
           $card = $_POST["card"]; 
           $league = $_POST["league"]; 
           $player = $_POST["player"]; 
-          $salary = $_POST["salary"]; //умножить на коэффициент
-          $price =  $salary+($salary*0.05);
+          $base_cost = $_POST["cost"]; //умножить на коэффициент
+          $price =  $base_cost+($base_cost*(get_option("hut_procent")!=false?get_option("hut_procent"):0.05));
           $places = $_POST["places"];
+          $console =  $_POST["console"];
           $date_start = date("Y-m-d H:i:s"); 
             
           
@@ -110,7 +111,7 @@ $result = "";
           $content = str_replace("/assets" , "https://hutdb.net/assets", json_decode($content)->value  );  
           $content = str_replace("'" , "",$content);
         
-           $wpdb->query( "INSERT INTO `wp_cards`(`card_id`, `player`, `card_type`, `league`, `card_code`, `salary`, `price`, `places`, `free_place`, `win_user_id`, `winplace`, `random`, `signature`, `start_date`, `end_date`) VALUES ('$id','$player','$card','$league','$content','$salary','$price','$places','$places','0','0','','','$date_start','0000-00-00 00:00:00')" );
+           $wpdb->query( "INSERT INTO `wp_cards`(`card_id`, `player`, `card_type`, `league`, `card_code`, `base_cost`, `price`,`console`,`in_game`, `places`, `occupied_places`, `win_user_id`, `winplace`, `random`, `signature`, `start_date`, `end_date`) VALUES ('$id','$player','$card','$league','$content','$base_cost','$price','$console','1','$places','0','0','0','','','$date_start','0000-00-00 00:00:00')" );
             
           $result = $wpdb->last_error;
         break;

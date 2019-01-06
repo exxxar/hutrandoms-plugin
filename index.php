@@ -28,25 +28,25 @@
             <div class="row">
                 <div class="input-field col s3 m3 l2">
                     <label for="procent">Мой процент, %</label>
-                    <input type="number" id="procent" value="<?php echo get_option("hut_procent")!=false?get_option("hut_procent"):"0";?>">
+                    <input type="number" id="procent" value="<?php echo get_option(" hut_procent")!=false?get_option("hut_procent"):"0";?>">
                 </div>
                 <div class="input-field col s3 m3 l2">
                     <label for="title">Название валюты</label>
-                    <input type="text" id="title" value="<?php echo get_option("hut_title")!=false?get_option("hut_title"):"pucks";?>">
+                    <input type="text" id="title" value="<?php echo get_option(" hut_title")!=false?get_option("hut_title"):"pucks";?>">
                 </div>
                 <div class="input-field col s3 m3 l2">
                     <label for="coins">Курс обмена, монеты</label>
-                    <input type="number" id="coins" value="<?php echo get_option("hut_coins")!=false?get_option("hut_coins"):"0";?>">
+                    <input type="number" id="coins" value="<?php echo get_option(" hut_coins")!=false?get_option("hut_coins"):"0";?>">
                 </div>
                 <div class="input-field col s3 m3 l2">
                     <label for="rub">Курс обмена, рубли</label>
-                    <input type="number" id="rub" value="<?php echo get_option("hut_rub")!=false?get_option("hut_rub"):"0";?>">
-                </div>               
+                    <input type="number" id="rub" value="<?php echo get_option(" hut_rub")!=false?get_option("hut_rub"):"0";?>">
+                </div>
             </div>
             <div class="row">
                 <div class="col s12"><button class="btn" id="save-options">Сохранить</button></div>
             </div>
-            
+
             <hr>
             <h4>Поиск карточек</h4>
             <form id="basic-player-search" method="post" action="">
@@ -329,8 +329,9 @@
                                 <th><a data-value="name">Name</a></th>
                                 <th><a data-value="salary">Salary</a></th>
                                 <th><a data-value="ovr">OVR</a></th>
-                                <th>Цена карточки</th>
+                                <th>Цена карточки, монеты</th>
                                 <th>Кол-во мест</th>
+                                <th>Консоль</th>
                                 <th>Действия</th>
                             </thead>
                         </table>
@@ -357,7 +358,7 @@
                 <div class="col s12">
                     <h3>Мои лоты <a id="refresh-cards" class="refresh-cards" data-page-id="0"><i class="small material-icons">autorenew</i></a></h3>
                     <div class="row">
-                        <div class="input-field col s12">                          
+                        <div class="input-field col s2">
                             <select id="lots-per-page">
                                 <option value="1" selected>10</option>
                                 <option value="2">20</option>
@@ -365,17 +366,36 @@
                                 <option value="4">50</option>
                                 <option value="5">100</option>
                             </select>
-                              <label for="lots-per-page">Количество лотов на страницу</label>
+                            <label for="lots-per-page">Количество лотов на страницу</label>
+                        </div>
+                        <div class="input-field col s2">
+                            <select id="filters">
+                                <option value="1" selected>По очередности добавления (+)</option>
+                                <option value="2">По очередности добавления (-)</option>
+                                <option value="3">По цене (+)</option>
+                                <option value="4">По цене (-)</option>
+                                <option value="5">По заполненности (+)</option>
+                                <option value="6">По заполненности (-)</option>
+                                <option value="7">Сперва XBOX</option>
+                                <option value="8">Сперва PS4</option>
+                                <option value="9">В игре</option>
+                                <option value="10">Вне игры</option>
+                            </select>
+                            <label for="filters">Фильтры</label>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <ul id="card-pagination" class="pagination">
 
+                            </ul>
+                        </div>
+                    </div>
                     <div class="table" id="my-card-list">
 
 
                     </div>
-                    <ul id="card-pagination" class="pagination">
 
-                    </ul>
                 </div>
             </div>
 
@@ -396,10 +416,53 @@
     <div id="card-edit" class="modal">
         <div class="modal-content">
             <h4>Карточка</h4>
-            <p>A bunch of text</p>
+            <div class="row">
+                <div class="input-field col s6 m4">
+                    <label for="edited-price">Цена карточки</label>
+                    <input type="number" id="edited-price" min="0" value="0">
+                </div>
+                <div class="input-field col s6 m4">
+                    <label for="edited-places">Всего мест</label>
+                    <input type="number" id="edited-places" min="0" value="0">
+                </div>
+                <div class="input-field col s6 m4">
+                    <label for="edited-occupied-places">Занято мест</label>
+                    <input type="number" id="edited-occupied-place" min="0" value="0" disabled>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="input-field col s6 m4">
+
+                    <input type="time" id="edited-end-time">
+                    <label for="edited-end-time">Время окончания</label>
+                </div>
+                <div class="input-field col s6 m4">
+
+                    <input type="date" id="edited-end-date">
+                    <label for="edited-end-date">Дата окончания</label>
+                </div>
+                <div class="input-field col s6 m4">
+
+                    <select id="edited-console">
+                        <option value="1" selected>Sony Playstation 4</option>
+                        <option value="2">XBOX</option>
+                    </select>
+                    <label for="edited-end-date">Консоль</label>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6 m3">
+                        <label>
+                            <input type="checkbox" id="edited-in-game" checked="checked" />
+                            <span>В игре</span>
+                        </label>
+                    </div>
+
+                </div>
+            </div>
         </div>
         <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+            <a href="#!" class="modal-close btn waves-effect waves-green">Сохранить</a>
         </div>
     </div>
 
