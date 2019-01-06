@@ -1,0 +1,186 @@
+*:focus {
+    outline: none;
+    outline-style: none;
+    box-shadow: none;
+    border-color: transparent;
+}
+
+.tabs {
+    background-color: transparent;
+}
+
+.tabs .tab a {
+    font-weight: 800;
+}
+
+.tabs .tab a:hover,
+.tabs .tab a.active {
+    background-color: #FF5722;
+    color: #ffffff;
+
+}
+
+.player-popup-window {
+    width: 200px;
+    height: 300px;
+    // background: red;
+    display: none;
+    position: absolute;
+    z-index: 99999;
+}
+
+thead > th {
+    text-transform: uppercase;
+}
+
+.cards-list {
+    width: 100%;
+    height: 300px;
+    box-sizing: border-box;
+    padding: 10px;
+    overflow-y: scroll;
+}
+
+
+.user-list table {
+    width: 2000px;
+}
+
+a {
+    cursor: pointer;
+}
+
+body {}
+
+.stats-left,
+.stats-right {
+    width: 50%;
+}
+
+#basic-player-search {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    flex-wrap: wrap;
+}
+
+#basic-player-search label {
+    font-size: 1.2rem;
+    color: #dc2020;
+}
+
+.table,
+.footer {
+    width: 100%;
+    position: relative;
+}
+
+.table {
+    height: 500px;
+
+}
+
+.table .results {
+    height: 425px;
+    overflow-y: scroll;
+}
+
+thead > th {
+    text-transform: uppercase;
+}
+
+.player-popup-hint {
+    color: magenta;
+}
+
+#my-card-list {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+#my-card-list .ncard {
+    width: 136px;
+    height: 190px;
+}
+
+#my-card-list > .item {
+    display: block;
+    position: relative;
+    width: 136px;
+    height: 190px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    margin-right: 10px;
+}
+
+#my-card-list > .item  > .wrapper {
+    position: absolute;
+    width: 136px;
+    height: 190px;
+    top:0;
+    left:0;
+    z-index: 10;
+}
+
+#my-card-list > .item > .controlls {
+     position: absolute;
+    width: 136px;
+    height: 190px;
+    top:0;
+    left:0;
+    z-index: 15;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-info-btn {
+    background-color: #9C27B0;
+}
+
+.card-info-btn:hover {
+    background-color: #BA68C8;
+}
+
+.card-info-btn:focus {
+        background-color: #673AB7;
+}
+
+.loading {
+    width: 100%;
+    height: 17px;
+    background: black;
+    position: absolute;
+    bottom: -19px;
+    /* border-radius: 0px 0px 10px 10px; */
+    border: 1px white solid;
+    box-shadow: 0px 0px 1px 1px black
+}
+
+.loading > .progress-line {
+    width: 0%;
+    background: #cddc39;
+    background-size: contain;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 11;
+}
+
+.loading > .progress-text {
+    width: 100%;
+    text-align: center;
+    height: 22px;
+    left: 0;
+    top: -14px;
+    position: absolute;
+    z-index: 12;
+    font-size: 9pt;
+    font-weight: 800;
+    color: white;
+}
