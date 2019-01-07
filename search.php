@@ -4,7 +4,7 @@ require_once("../../../wp-load.php");
 
 global $wpdb;
 function optionAddOrUpdate($option_name,$option_value){
-    if ( get_option($option_name)!=false ) {
+    if ( get_option($option_name)!=false||strlen(trim(get_option($option_name)))==0 ) {
         update_option($option_name, $option_value);
       } else {
         add_option($option_name, $option_value);
@@ -17,13 +17,15 @@ $result = "";
             $procent = $_POST["procent"];
             $title= $_POST["title"];
             $coins= $_POST["coins"];
-            $rub= $_POST["rub"];   
+            $rub= $_POST["rub"]; 
+            $year = $_POST["year"]; 
             
             optionAddOrUpdate("hut_procent",$procent);
             optionAddOrUpdate("hut_title",$title);
             optionAddOrUpdate("hut_coins",$coins);
             optionAddOrUpdate("hut_rub",$rub);
-            $result =get_option("hut_procent")." ".get_option("hut_title")." ".get_option("hut_coins")." ".get_option("hut_rub");
+            optionAddOrUpdate("hut_year",$year);
+            $result =get_option("hut_procent")." ".get_option("hut_title")." ".get_option("hut_coins")." ".get_option("hut_rub")." ".get_option("hut_year");
             break;
         case "search":
             $tmp = "";
@@ -31,6 +33,7 @@ $result = "";
             $scard = "";
             $pos = "";
             $hgt="";
+            $year = get_option("hut_year")!=false?get_option("hut_year"):19;
             $post = preg_split("/[&]+/", $_POST["data"]);
             foreach($post as $item){
                 $i = preg_split("/[=]+/", $item);
@@ -55,6 +58,7 @@ $result = "";
                    
                 }   
             }
+            $tmp .= "&year=".$year;       
             
             if (strlen($hgt)>0)
                 $tmp .= "&hgt=".rtrim($hgt, ",");
@@ -114,6 +118,37 @@ $result = "";
            $wpdb->query( "INSERT INTO `wp_cards`(`card_id`, `player`, `card_type`, `league`, `card_code`, `base_cost`, `price`,`console`,`in_game`, `places`, `occupied_places`, `win_user_id`, `winplace`, `random`, `signature`, `start_date`, `end_date`) VALUES ('$id','$player','$card','$league','$content','$base_cost','$price','$console','1','$places','0','0','0','','','$date_start','0000-00-00 00:00:00')" );
             
           $result = $wpdb->last_error;
+        break;
+        case "places":
+            $id = $_POST["id"];
+            $content = $wpdb->get_results( "SELECT * FROM `wp_cards`  WHERE `ID`='$id'" );
+        
+            
+            $max_places = $content[0]->places;
+            $occupied_places = $content[0]->occupied_places;
+            $win_user_id = $content[0]->win_user_id;
+            $win_place = $content[0]->win_place;
+            $start_date =$content[0]->start_date; 
+            $end_date =$content[0]->end_date;
+            $card_id = $content[0]->ID;
+            
+            $content = null;
+            
+            $result = [];
+            if ($occupied_places>0){
+                  $content = $wpdb->get_results( "SELECT `wp_game`.*,`wp_users`.`avatar`,`wp_users`.`user_url` FROM `wp_game` INNER JOIN `wp_users` ON `wp_users`.`ID`=`wp_game`.`user_id` WHERE `card_id`='$card_id'" );
+                  $result["list"]=$content;
+            }
+            
+            $result["card_id"]=$card_id;
+            $result["max_places"]=$max_places;
+            $result["occupied_places"]=$occupied_places;
+            $result["win_user_id"]=$win_user_id;
+            $result["win_place"]=$win_place;
+            $result["start_date"]=$start_date;
+            $result["end_date"]=$end_date;
+            
+            $result = json_encode($result);
         break;
     }
     echo $result;

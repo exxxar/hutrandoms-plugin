@@ -26,21 +26,38 @@
         <div id="cards-admin" class="col s12">
             <h4>Мои параметры</h4>
             <div class="row">
-                <div class="input-field col s3 m3 l2">
+                <div class="input-field col s6 m2 l2">
                     <label for="procent">Мой процент, %</label>
                     <input type="number" id="procent" value="<?php echo get_option(" hut_procent")!=false?get_option("hut_procent"):"0";?>">
                 </div>
-                <div class="input-field col s3 m3 l2">
+                <div class="input-field col s6 m2 l2">
                     <label for="title">Название валюты</label>
                     <input type="text" id="title" value="<?php echo get_option(" hut_title")!=false?get_option("hut_title"):"pucks";?>">
                 </div>
-                <div class="input-field col s3 m3 l2">
+                <div class="input-field col s6 m2 l2">
                     <label for="coins">Курс обмена, монеты</label>
                     <input type="number" id="coins" value="<?php echo get_option(" hut_coins")!=false?get_option("hut_coins"):"0";?>">
                 </div>
-                <div class="input-field col s3 m3 l2">
+                <div class="input-field col s6 m2 l2">
                     <label for="rub">Курс обмена, рубли</label>
                     <input type="number" id="rub" value="<?php echo get_option(" hut_rub")!=false?get_option("hut_rub"):"0";?>">
+                </div>
+
+                <div class="input-field col s6 m2 l2">
+                    <select id="year" name="year">
+                        <?php 
+                              $year = get_option("hut_year")!=false?get_option("hut_year"):19;
+                                
+                               for ($i=18;$i<=20;$i++)   {
+                                   if ($year==$i)
+                                       echo "<option value='$i' selected>20$i</option>";
+                                   else
+                                       echo "<option value='$i'>20$i</option>";
+                               }
+                       
+                        ?>
+                    </select>
+                    <label for="year">Year</label>
                 </div>
             </div>
             <div class="row">
@@ -141,37 +158,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col s2"><label>Synergy</label></div>
-                        <div class="col s9">
-                            <div class="input-field">
-                                <select type="text" id="synergy" name="synergy" multiple="multiple" value="" placeholder="Select Synergy">
-                                    <?php
-                            $content = file_get_contents("https://hutdb.net//ajax/synergies.php?year=19");
 
-                            $data = json_decode($content) ;
-                             foreach ($data->synergies as $option){
-                                 echo "<option value='".$option->abr."'>".$option->abr." - ".$option->name.""."</option>";
-                             }
-                            
-                            ?>
-
-                                </select>
-                            </div>
-                        </div>
-                    </div>
                 </div><!-- END .stats-left -->
                 <div class="stats-right">
-                    <div class="row">
-                        <div class="col s2"><label>Year</label></div>
-                        <div class="input-field col s9">
-                            <select id="year" name="year">
-                                <option value="19" selected>2019</option>
-                                <option value="18">2018</option>
-                            </select>
-                        </div>
-                    </div>
-                    <hr>
                     <div class="row">
                         <div class="col s2"><label>Overall</label></div>
                         <div class="col s4"><input type="text" cid="ovrmin" placeholder="MIN"></div>
@@ -185,14 +174,15 @@
                                     <option>Any</option>
 
                                     <?php
-                            $content = file_get_contents("https://hutdb.net/ajax/get_teams.php?year=19&league=any");
+                                        $year = get_option("hut_year")!=false?get_option("hut_year"):19;
+                                        $content = file_get_contents("https://hutdb.net/ajax/get_teams.php?year=$year&league=any");
 
-                            $data = json_decode($content) ;
-                             foreach ($data as $option){
-                                 echo "<option value='".$option->FTN."'>".$option->FTN.""."</option>";
-                             }
-                            
-                            ?>
+                                        $data = json_decode($content) ;
+                                         foreach ($data as $option){
+                                             echo "<option value='".$option->FTN."'>".$option->FTN.""."</option>";
+                                         }
+
+                                        ?>
                                 </select>
                             </div>
                         </div>
@@ -305,6 +295,27 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col s2"><label>Synergy</label></div>
+                        <div class="col s9">
+                            <div class="input-field">
+                                <select type="text" id="synergy" name="synergy" multiple="multiple" value="" placeholder="Select Synergy">
+                                    <?php
+                                     $year = get_option("hut_year")!=false?get_option("hut_year"):19;
+                                    $content = file_get_contents("https://hutdb.net//ajax/synergies.php?year=$year");
+
+                                    $data = json_decode($content) ;
+                                     foreach ($data->synergies as $option){
+                                         echo "<option value='".$option->abr."'>".$option->abr." - ".$option->name.""."</option>";
+                                     }
+
+                                    ?>
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div><!-- END .stats-right -->
                 <div class="footer">
                     <div class="row">
@@ -358,7 +369,7 @@
                 <div class="col s12">
                     <h3>Мои лоты <a id="refresh-cards" class="refresh-cards" data-page-id="0"><i class="small material-icons">autorenew</i></a></h3>
                     <div class="row">
-                        <div class="input-field col s2">
+                        <div class="input-field col s4">
                             <select id="lots-per-page">
                                 <option value="1" selected>10</option>
                                 <option value="2">20</option>
@@ -368,7 +379,7 @@
                             </select>
                             <label for="lots-per-page">Количество лотов на страницу</label>
                         </div>
-                        <div class="input-field col s2">
+                        <div class="input-field col s4">
                             <select id="filters">
                                 <option value="1" selected>По очередности добавления (+)</option>
                                 <option value="2">По очередности добавления (-)</option>
@@ -408,6 +419,7 @@
 
     <!-- Модалка для карточек -->
     <div class="player-popup-window">
+
 
     </div>
 
@@ -465,6 +477,31 @@
             <a href="#!" class="modal-close btn waves-effect waves-green">Сохранить</a>
         </div>
     </div>
+
+
+
+    <!-- Распределение мест -->
+    <div id="game-places" class="modal">
+        <div class="modal-content custom-modal-bg">
+            <div class="playing-field" id="playing-field">
+
+
+            </div>
+            <div class="progress" id="game-preloader">
+                <div class="indeterminate"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Закрыть</a>
+        </div>
+    </div>
+
+    <div id="card-preloader">
+        <div class="progress">
+            <div class="indeterminate"></div>
+        </div>
+    </div>
+
 
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>

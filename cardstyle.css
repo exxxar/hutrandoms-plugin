@@ -15,7 +15,7 @@
 
 .ncard,.ncard .backplate {
     margin: auto;
-    z-index: 9999;
+    z-index: 999;
     cursor: pointer;
     overflow: hidden;
     background-size: contain;

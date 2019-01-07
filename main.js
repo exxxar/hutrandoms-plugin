@@ -1,32 +1,87 @@
    var data = [];
-    function getConsole(a){
-        switch(a){
-            default:
-            case "1": return "XBOX";
-            case "2": return "PS4";
-        }
-    }
+
+   function getConsole(a) {
+       switch (a) {
+           default:
+           case "1":
+               return "XBOX";
+           case "2":
+               return "PS4";
+       }
+   }
    $(document).ready(function () {
        $('select').formSelect();
        $('.tabs').tabs();
        $('.modal').modal();
 
        $("#save-options").click(function () {
+           $("#card-preloader").css({
+               "display": "flex"
+           });
            var procent = $("#procent").val();
            var title = $("#title").val();
            var coins = $("#coins").val();
            var rub = $("#rub").val();
+           var year = $("#year option:selected").val();
 
            $.post($("#server-path").attr("src") + "search.php", {
                option: "options",
                procent: procent,
                title: title,
                coins: coins,
-               rub: rub
+               rub: rub,
+               year: year
            }).then(function (a, b) {
-
+               $("#card-preloader").css({
+                   "display": "none"
+               });
+               location.reload();
            });
 
+       });
+
+       $(document).on('click','.slot',function(){
+           console.log($(this).attr("data-url"));
+           if ($(this).attr("data-url")!="")
+                window.location = $(this).attr("data-url");
+       });
+       
+       $(document).on('click', '.game-places', function () {
+           $("#playing-field").empty();
+           $("#game-preloader").css({
+               "display": "block"
+           });
+           var id = $(this).attr("data-id");
+           $.post($("#server-path").attr("src") + "search.php", {
+               option: "places",
+               id: id
+
+           }).then(function (a, b) {
+               var tmp = JSON.parse(a);
+               /*
+                               <div class="slot free"><p>1</p><a href=""><img src="<?php echo plugin_dir_url( __FILE__ ).'img/small-logo.jpg';?>" alt=""></a></div>
+                               <div class="slot occupied"><p>2</p><a href=""><img src="https://pp.userapi.com/c845122/v845122201/15d50f/CZVL2ANyDjQ.jpg" alt=""></a></div>
+                */
+
+
+               for (var i = 0; i < tmp.max_places; i++) {
+                   var user = (function (list, place) {
+                       for (var u in list) {
+                           if (list[u].place == place)
+                               return list[u];
+                       }
+                       return null;
+                   })(tmp.list, i);
+
+                   $("#playing-field").append(`\
+                             <div class="slot ${user==null?"free":"occupied"}" data-url="${user==null?"":user.user_url}"><p>${i+1}</p><a href=""><img src="${user==null?$("#server-path").attr("src")+"img/small-logo.jpg":user.avatar}" alt=""></a></div>\
+                        `);
+
+               }
+               $("#game-preloader").css({
+                   "display": "none"
+               });
+           });
        });
 
        $(document).on('click', '.refresh-cards', function () {
@@ -76,7 +131,7 @@
                                 <div class="console-type">
                                     <p>${getConsole(tmp.list[i].console)}</p>
                                 </div>
-                                <button class="btn"><i class="material-icons">apps</i></button>
+                                <button class="btn game-places modal-trigger" href="#game-places" data-id="${tmp.list[i].ID}"><i class="material-icons">apps</i></button>
                                 <button class="modal-trigger card-info-btn btn" data-target="card-edit"><i class="material-icons">edit</i></button>\
                                 <div class="loading">\
                                     <div class="progress-line" style="width:${curentProcent}%"></div>\
@@ -87,7 +142,7 @@
                    `);
 
                }
-            
+
            });
        });
 
@@ -96,14 +151,14 @@
            $(".player-popup-window").css({
                "display": "none"
            });
-            $(".player-popup-window").empty();
+           $(".player-popup-window").empty();
        });
-       
+
        $(document).on('mouseleave', '.player-popup-hint', function (e) {
            $(".player-popup-window").css({
                "display": "none"
            });
-            $(".player-popup-window").empty();
+           $(".player-popup-window").empty();
        });
 
        $(document).on('click', '.add-card', function () {
@@ -120,7 +175,7 @@
                player: $(this).attr("data-player"),
                cost: $("#cost" + $(this).attr("data-id")).val(),
                places: $("#places" + $(this).attr("data-id")).val(),
-               console:$("[name='console" + $(this).attr("data-id")+"']:checked").val()
+               console: $("[name='console" + $(this).attr("data-id") + "']:checked").val()
            }).then(function (a, b) {
                btn.css({
                    "background-color": "#CDDC39"
@@ -129,8 +184,11 @@
            });
        });
 
-       $(document).on('click', '.player-popup-hint', function(){
+       $(document).on('click', '.player-popup-hint', function () {
            $(".player-popup-window").empty();
+           $("#card-preloader").css({
+               "display": "flex"
+           });
            var top = ($(this).last().offset().top - 200);
            var left = ($(this).last().offset().left - 100);
            $.post($("#server-path").attr("src") + "search.php", {
@@ -148,12 +206,12 @@
                    "top": top + "px",
                    "left": left + "px"
                });
-
-
-
-           }); 
+               $("#card-preloader").css({
+                   "display": "none"
+               });
+           });
        });
-       
+
        $(document).on('mouseover', '.player-popup-hint', function () {
            $(this).click();
        });
@@ -251,7 +309,7 @@
                                     <td><button class="btn add-card" data-id="${data[k].id}" data-card="${data[k].Card}" data-league="${data[k].League}" data-player="${data[k].Player}" ><i class="material-icons">add</i></button></td>\
                                 </tr>`;
                    $('#cards-table').append(multiline);
-                
+
                }
            }
        });
@@ -259,6 +317,9 @@
 
        $("#search").click(function (e) {
            e.preventDefault();
+           $("#card-preloader").css({
+               "display": "flex"
+           });
            $('#cards-table').empty();
            $(".player-popup-window").css({
                "display": "none"
@@ -309,12 +370,14 @@
                                     <td><button class="btn add-card" data-id="${data[k].id}" data-card="${data[k].Card}" data-league="${data[k].League}" data-player="${data[k].Player}" ><i class="material-icons">add</i></button></td>\
                                 </tr>`;
                        $('#cards-table').append(multiline);
-                     
+
                    }
                }
 
 
-
+               $("#card-preloader").css({
+                   "display": "none"
+               });
            });
        });
        $("#search").click();
