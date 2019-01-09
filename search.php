@@ -2,6 +2,9 @@
 
 require_once("../../../wp-load.php");
 
+if ( !is_user_logged_in() ) 
+    die("error login");
+
 global $wpdb;
 function optionAddOrUpdate($option_name,$option_value){
     if ( get_option($option_name)!=false||strlen(trim(get_option($option_name)))==0 ) {
@@ -95,9 +98,53 @@ $result = "";
                     
             }
             $page = $_POST["page"]*$cards_on_page;
-            $page_count = round((($wpdb->get_results( "SELECT count(*) as length FROM `wp_cards`" ))[0]->length/$cards_on_page)+1);
-            
-            $result = json_encode(["list"=>$wpdb->get_results( "SELECT * FROM `wp_cards` LIMIT $cards_on_page OFFSET $page" ),"pages"=>$page_count,"current_page"=>$_POST["page"]]);    
+            $in_game = $_POST["ingame"];
+            $cards_count = ($wpdb->get_results( "SELECT count(*) as length FROM `wp_cards` WHERE `in_game`='$in_game'" ))[0]->length;
+            $page_count = 0;
+                switch($cards_count % $cards_on_page) {
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                        $page_count = round($cards_count / $cards_on_page)+1;
+                    break;
+                    case 0:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                         $page_count = round($cards_count / $cards_on_page);
+                    break;
+                }
+            $sortby = "";
+                switch($_POST["sort"]){
+                    default:
+                    case 0:
+                    case 1:
+                         $sortby = "ORDER BY `ID` ASC"; break;
+                    case 2:
+                         $sortby = "ORDER BY `ID` DESC"; break;
+                    case 3:
+                         $sortby = "ORDER BY `price` ASC"; break;
+                    case 4:
+                         $sortby = "ORDER BY `price` DESC"; break;
+                    case 5:
+                         $sortby = "ORDER BY `occupied_places` ASC"; break;
+                    case 6:
+                         $sortby = "ORDER BY `occupied_places` DESC"; break;
+                    case 7:
+                         $sortby = "ORDER BY `places` ASC"; break;
+                    case 8:
+                         $sortby = "ORDER BY `places` DESC"; break;
+                    case 9:
+                         $sortby = "ORDER BY `console` ASC"; break;
+                    case 10:
+                         $sortby = "ORDER BY `console` DESC"; break;
+                        
+                }
+            $result = json_encode(["list"=>$wpdb->get_results( "SELECT * FROM `wp_cards` WHERE `in_game`='$in_game' $sortby LIMIT $cards_on_page OFFSET $page " ),"pages"=>$page_count,"current_page"=>$_POST["page"]]);    
+           
         break;    
         case "addcard":
           $id = $_POST["id"];
@@ -115,7 +162,7 @@ $result = "";
           $content = str_replace("/assets" , "https://hutdb.net/assets", json_decode($content)->value  );  
           $content = str_replace("'" , "",$content);
         
-           $wpdb->query( "INSERT INTO `wp_cards`(`card_id`, `player`, `card_type`, `league`, `card_code`, `base_cost`, `price`,`console`,`in_game`, `places`, `occupied_places`, `win_user_id`, `winplace`, `random`, `signature`, `start_date`, `end_date`) VALUES ('$id','$player','$card','$league','$content','$base_cost','$price','$console','1','$places','0','0','0','','','$date_start','0000-00-00 00:00:00')" );
+           $wpdb->query( "INSERT INTO `wp_cards`(`card_id`, `player`, `card_type`, `league`, `card_code`, `base_cost`, `price`,`console`,`in_game`, `places`, `occupied_places`, `win_user_id`, `win_place`, `random`, `signature`, `start_date`, `end_date`) VALUES ('$id','$player','$card','$league','$content','$base_cost','$price','$console','1','$places','0','0','0','','','$date_start','0000-00-00 00:00:00')" );
             
           $result = $wpdb->last_error;
         break;
@@ -150,6 +197,37 @@ $result = "";
             
             $result = json_encode($result);
         break;
+        case "remove":
+            $id = $_POST["id"];
+            $wpdb->get_results( "DELETE FROM `wp_cards` WHERE `ID`='$id'");
+            $result = $wpdb->last_error;
+        break;
+        case "finish":
+            $id = $_POST["id"];
+            $wpdb->get_results( "UPDATE `wp_cards` SET `in_game`='0' WHERE `ID`='$id'");            
+            $result = $wpdb->last_error;
+        break;    
+        case "begin":
+            $id = $_POST["id"];
+            $wpdb->get_results( "UPDATE `wp_cards` SET `in_game`='1' WHERE `ID`='$id'");
+            //возможно тут стоит обнулить занятые места
+            $result = $wpdb->last_error;
+        break;    
+        case "get":
+            $id = $_POST["id"];
+            $result = json_encode($wpdb->get_results( "SELECT * FROM `wp_cards` WHERE `ID`='$id'"));
+        break;
+        case "update":
+            $id = $_POST["id"];
+            $price = $_POST["price"];
+            $places = $_POST["places"];
+            $datetime = $_POST["datetime"];
+            $console = $_POST["console"];
+            $ingame = $_POST["ingame"];
+            
+            $wpdb->get_results( "UPDATE `wp_cards` SET `price`='$price',`places`='$places',`end_date`='$datetime',`console`='$console',`in_game`='$ingame' WHERE `ID`='$id'");
+            $result = $wpdb->last_error;
+            break;
     }
     echo $result;
 }

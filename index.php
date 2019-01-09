@@ -329,8 +329,7 @@
 
             </form>
 
-            <div class="table">
-                <div class="row">
+           <div class="row">
                     <div class="col s12">
                         <table>
                             <thead>
@@ -350,16 +349,18 @@
 
                     </div>
                 </div>
+            <div class="table">
+                
                 <div class="row">
                     <div class="col s12">
-                        <div class="results">
-                            <table id="cards-table">
-                                <tbody>
+
+                        <table id="cards-table">
+                            <tbody>
 
 
-                                </tbody>
-                            </table>
-                        </div>
+                            </tbody>
+                        </table>
+
 
                     </div>
                 </div>
@@ -369,6 +370,12 @@
                 <div class="col s12">
                     <h3>Мои лоты <a id="refresh-cards" class="refresh-cards" data-page-id="0"><i class="small material-icons">autorenew</i></a></h3>
                     <div class="row">
+                        <div class="input-field col s2">
+                            <label>
+                                <input type="checkbox" checked id="lot-in-game" />
+                                <span>В игре</span>
+                            </label>
+                        </div>
                         <div class="input-field col s4">
                             <select id="lots-per-page">
                                 <option value="1" selected>10</option>
@@ -380,19 +387,30 @@
                             <label for="lots-per-page">Количество лотов на страницу</label>
                         </div>
                         <div class="input-field col s4">
-                            <select id="filters">
+                            <select id="sort-filters">
                                 <option value="1" selected>По очередности добавления (+)</option>
                                 <option value="2">По очередности добавления (-)</option>
                                 <option value="3">По цене (+)</option>
                                 <option value="4">По цене (-)</option>
                                 <option value="5">По заполненности (+)</option>
                                 <option value="6">По заполненности (-)</option>
-                                <option value="7">Сперва XBOX</option>
-                                <option value="8">Сперва PS4</option>
-                                <option value="9">В игре</option>
-                                <option value="10">Вне игры</option>
+                                <option value="7">По числу мест (+)</option>
+                                <option value="8">По числу мест (-)</option>
+                                <option value="9">Сперва PS4</option>
+                                <option value="10">Сперва XBOX</option>
                             </select>
                             <label for="filters">Фильтры</label>
+                        </div>
+                        <div class="input-field col s2">
+                            <!-- Dropdown Trigger -->
+                            <a class='dropdown-trigger btn' id="card-selection-menu-btn" href='#' data-target='card-selection-menu'>Действия</a>
+
+                            <!-- Dropdown Structure -->
+                            <ul id='card-selection-menu' class='dropdown-content'>
+                                <li><a class="remove-cards" href="#!">Удалить</a></li>
+                                <li><a class="finish-cards" href="#!">Завершить</a></li>
+                                <li><a class="beign-cards" href="#!">Начать</a></li>
+                            </ul>
                         </div>
                     </div>
                     <div class="row">
@@ -402,9 +420,13 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="table" id="my-card-list">
+                    <div class="row">
+                        <div class="col s12">
+                            <div class="table" id="my-card-list">
 
 
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -428,53 +450,62 @@
     <div id="card-edit" class="modal">
         <div class="modal-content">
             <h4>Карточка</h4>
-            <div class="row">
-                <div class="input-field col s6 m4">
-                    <label for="edited-price">Цена карточки</label>
-                    <input type="number" id="edited-price" min="0" value="0">
-                </div>
-                <div class="input-field col s6 m4">
-                    <label for="edited-places">Всего мест</label>
-                    <input type="number" id="edited-places" min="0" value="0">
-                </div>
-                <div class="input-field col s6 m4">
-                    <label for="edited-occupied-places">Занято мест</label>
-                    <input type="number" id="edited-occupied-place" min="0" value="0" disabled>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="input-field col s6 m4">
-
-                    <input type="time" id="edited-end-time">
-                    <label for="edited-end-time">Время окончания</label>
-                </div>
-                <div class="input-field col s6 m4">
-
-                    <input type="date" id="edited-end-date">
-                    <label for="edited-end-date">Дата окончания</label>
-                </div>
-                <div class="input-field col s6 m4">
-
-                    <select id="edited-console">
-                        <option value="1" selected>Sony Playstation 4</option>
-                        <option value="2">XBOX</option>
-                    </select>
-                    <label for="edited-end-date">Консоль</label>
-                </div>
+            <div id="card-data">
+                <input type="hidden" id="edited-id" value="0">
                 <div class="row">
-                    <div class="input-field col s6 m3">
-                        <label>
-                            <input type="checkbox" id="edited-in-game" checked="checked" />
-                            <span>В игре</span>
-                        </label>
+                    <div class="input-field col s6 m4">
+                        <label for="edited-price">Цена карточки</label>
+                        <input type="number" id="edited-price" min="0" value="0">
                     </div>
+                    <div class="input-field col s6 m4">
+                        <label for="edited-places">Всего мест</label>
+                        <input type="number" id="edited-places" min="0" value="0">
+                    </div>
+                    <div class="input-field col s6 m4">
+                        <label for="edited-occupied-places">Занято мест</label>
+                        <input type="number" id="edited-occupied-place" min="0" value="0" disabled>
+                    </div>
+                </div>
 
+                <div class="row">
+                    <div class="input-field col s6 m4">
+
+                        <input type="time" id="edited-end-time">
+                        <label for="edited-end-time">Время окончания</label>
+                    </div>
+                    <div class="input-field col s6 m4">
+
+                        <input type="date" id="edited-end-date">
+                        <label for="edited-end-date">Дата окончания</label>
+                    </div>
+                    <div class="input-field col s6 m4">
+
+                        <select id="edited-console">
+                            <option value="1">Sony Playstation 4</option>
+                            <option value="2">XBOX</option>
+                        </select>
+                        <label for="edited-end-date">Консоль</label>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s6 m3">
+                            <label>
+                                <input type="checkbox" id="edited-in-game" />
+                                <span>В игре</span>
+                            </label>
+                        </div>
+
+                    </div>
                 </div>
             </div>
+            <div id="card-data-preloader">
+                <div class="progress">
+                    <div class="indeterminate"></div>
+                </div>
+            </div>
+
         </div>
         <div class="modal-footer">
-            <a href="#!" class="modal-close btn waves-effect waves-green">Сохранить</a>
+            <a href="#!" class="modal-close btn waves-effect waves-green save-modified-card-data">Сохранить</a>
         </div>
     </div>
 

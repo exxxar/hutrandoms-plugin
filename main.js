@@ -4,15 +4,111 @@
        switch (a) {
            default:
            case "1":
-               return "XBOX";
-           case "2":
                return "PS4";
+           case "2":
+               return "XBOX";
        }
    }
    $(document).ready(function () {
        $('select').formSelect();
        $('.tabs').tabs();
        $('.modal').modal();
+       $('.dropdown-trigger').dropdown();
+
+       $(".save-modified-card-data").click(function () {
+           var price = $("#edited-price").val();
+           var id = $("#edited-id").val();
+           var places = $("#edited-places").val();
+           var datetime = ($("#edited-end-date").val().trim() == "" ? "0000-00-00" : $("#edited-end-date").val()) + " " + $("#edited-end-time").val();
+           var console = $("#edited-console option:selected").val();
+
+           var ingame = $("#edited-in-game").is(":checked") ? 1 : 0;
+
+           $.post($("#server-path").attr("src") + "search.php", {
+               option: "update",
+               id: id,
+               price: price,
+               places: places,
+               datetime: datetime,
+               console: console,
+               ingame: ingame
+
+           }).then(function (a, b) {});
+
+       });
+       $(document).on('click', '.card-info-btn', function () {
+           $("#card-data").css({
+               "display": "none"
+           });
+           $("#card-data-preloader").css({
+               "display": "flex"
+           });
+           var id = $(this).attr("data-id");
+           $.post($("#server-path").attr("src") + "search.php", {
+               option: "get",
+               id: id
+           }).then(function (a, b) {
+               var tmp = JSON.parse(a)[0];
+               $("#edited-price").val(tmp.price);
+               $("#edited-id").val(tmp.ID);
+               $("#edited-places").val(tmp.places);
+               $("#edited-occupied-place").val(tmp.occupied_places);
+               $("#edited-end-time").val(tmp.end_date.split(' ')[1]);
+               $("#edited-end-date").val(tmp.end_date.split(' ')[0]);
+               $("#edited-console").val(tmp.console);
+               $('#edited-console').formSelect();
+               if (tmp.in_game == "1")
+                   $("#edited-in-game").prop("checked", true);
+               else
+                   $("#edited-in-game").prop("checked", false);
+
+               $("#card-data-preloader").css({
+                   "display": "none"
+               });
+               $("#card-data").css({
+                   "display": "block"
+               });
+           });
+       });
+       $(".remove-cards").click(function () {
+           if (confirm("Данное действие удалит карточки с играми из базы данных! Продолжить?"))
+               $("#my-card-list > .item .click-area.check").each(function (i, e) {
+                   var id = $(e).attr("data-id");
+                   $.post($("#server-path").attr("src") + "search.php", {
+                       option: "remove",
+                       id: id
+                   }).then(function (a, b) {
+                       $(".item[data-id='" + id + "']").remove();
+                   });
+               });
+       });
+
+       $(".finish-cards").click(function () {
+           $("#my-card-list > .item .click-area.check").each(function (i, e) {
+               var id = $(e).attr("data-id");
+               $.post($("#server-path").attr("src") + "search.php", {
+                   option: "finish",
+                   id: id
+               }).then(function (a, b) {
+                   if ($("#lot-in-game").is(':checked'))
+                       $(".item[data-id='" + id + "']").remove();
+               });
+           });
+       });
+
+       $(".beign-cards").click(function () {
+           $("#my-card-list > .item .click-area.check").each(function (i, e) {
+               var id = $(e).attr("data-id");
+               $.post($("#server-path").attr("src") + "search.php", {
+                   option: "begin",
+                   id: id
+               }).then(function (a, b) {
+                   if (!$("#lot-in-game").is(':checked'))
+                       $(".item[data-id='" + id + "']").remove();
+               });
+           });
+       });
+
 
        $("#save-options").click(function () {
            $("#card-preloader").css({
@@ -40,12 +136,26 @@
 
        });
 
-       $(document).on('click','.slot',function(){
-           console.log($(this).attr("data-url"));
-           if ($(this).attr("data-url")!="")
-                window.location = $(this).attr("data-url");
+       $(document).on('click', '.slot', function () {
+           if ($(this).attr("data-url") != "")
+               window.location = $(this).attr("data-url");
        });
-       
+
+       $(document).on('click', '#my-card-list > .item .click-area', function () {
+           if (!$(this).hasClass("check"))
+               $(this).addClass("check");
+           else
+               $(this).removeClass("check");
+
+           if ($(".check").length > 0)
+               $("#card-selection-menu-btn").css({
+                   "display": "block"
+               });
+           else
+               $("#card-selection-menu-btn").css({
+                   "display": "none"
+               });
+       });
        $(document).on('click', '.game-places', function () {
            $("#playing-field").empty();
            $("#game-preloader").css({
@@ -85,10 +195,15 @@
        });
 
        $(document).on('click', '.refresh-cards', function () {
+              $("#card-selection-menu-btn").css({
+                   "display": "none"
+               });
            $.post($("#server-path").attr("src") + "search.php", {
                option: "cardslist",
                page: $(this).attr("data-page-id"),
-               lotsperpage: $("#lots-per-page").val()
+               lotsperpage: $("#lots-per-page").val(),
+               ingame: $("#lot-in-game").is(':checked') ? 1 : 0,
+               sort: $("#sort-filters option:selected").val()
            }).then(function (a, b) {
                var tmp = JSON.parse(a);
                $("#my-card-list").empty();
@@ -123,7 +238,7 @@
 
                    var curentProcent = (tmp.list[i].occupied_places / tmp.list[i].places) * 100;
                    $("#my-card-list").append(`\
-                        <div class="item">\
+                        <div class="item" data-id="${tmp.list[i].ID}">\
                             <div class="wrapper">\   
                                 ${tmp.list[i].card_code}\
                             </div>\
@@ -132,12 +247,14 @@
                                     <p>${getConsole(tmp.list[i].console)}</p>
                                 </div>
                                 <button class="btn game-places modal-trigger" href="#game-places" data-id="${tmp.list[i].ID}"><i class="material-icons">apps</i></button>
-                                <button class="modal-trigger card-info-btn btn" data-target="card-edit"><i class="material-icons">edit</i></button>\
+                                <button class="modal-trigger card-info-btn btn" data-target="card-edit" data-id="${tmp.list[i].ID}"><i class="material-icons">edit</i></button>\
                                 <div class="loading">\
                                     <div class="progress-line" style="width:${curentProcent}%"></div>\
                                     <p class="progress-text">${Math.round(curentProcent)}%</p>\                                
                                 </div>\
                             </div>\
+                            <div class="click-area" data-id="${tmp.list[i].ID}">
+                            </div>
                         </div>\
                    `);
 
@@ -294,13 +411,13 @@
                                         <div class="row">\
                                             <div class="col s6">\
                                                 <label>\
-                                                    <input class="with-gap" name="console${data[k].id}" type="radio" value="2" />\
+                                                    <input class="with-gap" name="console${data[k].id}" type="radio" value="1" />\
                                                     <span>PS4</span>\
                                                   </label>\
                                             </div>\
                                             <div class="col s6">\
                                                 <label>\
-                                                    <input class="with-gap" name="console${data[k].id}" type="radio" value="1" />\
+                                                    <input class="with-gap" name="console${data[k].id}" type="radio" value="2" />\
                                                     <span>XBOX</span>\
                                                   </label>\
                                             </div>\
