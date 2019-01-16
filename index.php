@@ -7,8 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="<?php echo plugin_dir_url( __FILE__ ).'style.css';?>">
-    <link rel="stylesheet" href="<?php echo plugin_dir_url( __FILE__ ).'cardstyle.css';?>">
+    <link rel="stylesheet" href="<?php echo plugin_dir_url( __FILE__ ).'assets/css/style.css';?>">
+    <link rel="stylesheet" href="<?php echo plugin_dir_url( __FILE__ ).'assets/css/cardstyle.css';?>">
+    <link rel="stylesheet" href="<?php echo plugin_dir_url( __FILE__ ).'assets/css/dropzone.css';?>">
     <title>Админка</title>
     <meta id="server-path" src="<?php echo plugin_dir_url( __FILE__ );?>">
 </head>
@@ -307,7 +308,7 @@
 
                                     $data = json_decode($content) ;
                                      foreach ($data->synergies as $option){
-                                         echo "<option value='".$option->abr."'>".$option->abr." - ".$option->name.""."</option>";
+                                         echo "<option value='".$option->abr."-1'>".$option->abr." - ".$option->name.""."</option>";
                                      }
 
                                     ?>
@@ -329,37 +330,28 @@
 
             </form>
 
-           <div class="row">
-                    <div class="col s12">
-                        <table>
-                            <thead>
-                                <th><a data-value="card">Card</a></th>
-                                <th><a data-value="league">League</a></th>
-                                <th><a data-value="team">Team</a></th>
-                                <th><a data-value="name">Name</a></th>
-                                <th><a data-value="salary">Salary</a></th>
-                                <th><a data-value="ovr">OVR</a></th>
-                                <th>Цена карточки, монеты</th>
-                                <th>Кол-во мест</th>
-                                <th>Консоль</th>
-                                <th>Действия</th>
-                            </thead>
-                        </table>
+            <div class="row">
+                <div class="col s12 card-search-table">
+                    <table>
+                        <thead>
+                            <th><a data-value="card">Card</a></th>
+                            <th><a data-value="league">League</a></th>
+                            <th><a data-value="team">Team</a></th>
+                            <th><a data-value="name">Name</a></th>
+                            <th><a data-value="salary">Salary</a></th>
+                            <th><a data-value="ovr">OVR</a></th>
+                        </thead>
+                    </table>
 
 
-                    </div>
                 </div>
+            </div>
             <div class="table">
-                
+
                 <div class="row">
                     <div class="col s12">
+                        <div id="cards-table"></div>
 
-                        <table id="cards-table">
-                            <tbody>
-
-
-                            </tbody>
-                        </table>
 
 
                     </div>
@@ -368,7 +360,12 @@
             <hr>
             <div class="row">
                 <div class="col s12">
-                    <h3>Мои лоты <a id="refresh-cards" class="refresh-cards" data-page-id="0"><i class="small material-icons">autorenew</i></a></h3>
+                    <h3>Мои карточки <a id="refresh-cards" class="refresh-cards" data-page-id="0"><i class="small material-icons">autorenew</i></a></h3>
+                    <div class="row">
+                        <div class="col s2">
+                            <button data-target="add-csutom-item" class="btn modal-trigger">Новый лот</button>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="input-field col s2">
                             <label>
@@ -386,6 +383,7 @@
                             </select>
                             <label for="lots-per-page">Количество лотов на страницу</label>
                         </div>
+
                         <div class="input-field col s4">
                             <select id="sort-filters">
                                 <option value="1" selected>По очередности добавления (+)</option>
@@ -413,6 +411,8 @@
                             </ul>
                         </div>
                     </div>
+
+
                     <div class="row">
                         <div class="col s12">
                             <ul id="card-pagination" class="pagination">
@@ -436,7 +436,54 @@
         </div>
         <div id="users-admin" class="col s12">Test 2</div>
         <div id="auction-admin" class="col s12">Test 3</div>
-        <div id="mail-admin" class="col s12">Test 4</div>
+        <div id="mail-admin" class="col s12">
+
+            <h3>Массовая рассылка сообщений</h3>
+
+            <div class="users">
+
+                <form action="">
+                    <a class="action">Выбрать все</a>
+                    <ul>
+
+                        <?php
+                    global $wpdb;
+
+                        
+                    $mail_list = $wpdb->get_results( "SELECT `ID`,`user_email` FROM `wp_users`" );
+                    foreach ($mail_list as $data) {
+                        $mail = $data->user_email;
+                        $id = $data->ID;
+                        
+                        if (trim($mail)!="") {
+                       
+                        echo "<li><input type='checkbox'  value='$mail' name='pay_mail[]' >".$mail."</li>";
+                        }
+                    }
+
+                ?>
+
+                    </ul>
+                    <hr>
+                    <h4>Электронная почта (Новые адреса)</h4>
+                    <p class="message"></p>
+                    <textarea id="emails" placeholder="Введите через запятую новые почтовые адреса или оставте поле пустым"></textarea>
+                    <button type="button" class="btn" id="append_emails">Добавить адреса</button>
+                    <hr>
+                    <h4>Содержимое письма</h4>
+                    <input type="text" name="subject" placeholder="Тема письма">
+                    <textarea name="message" placeholder="Текст сообщения"></textarea>
+                    <button type="submit" class="btn">Сделать рассылку</button>
+                    <button type="reset" class="btn">Очистить</button>
+                    <p class="message"></p>
+
+                    <div class="progress hide">
+                        <div class="line"></div>
+                        <p>10/50</p>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- Модалка для карточек -->
@@ -510,6 +557,127 @@
     </div>
 
 
+    <div id="add-csutom-item" class="modal">
+        <div class="modal-content">
+            <h3>Добавление нового лота</h3>
+            <div class="row">
+                <div class="col s6">
+
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <select id="hours-exp">
+                                <option value="1">12 часов</option>
+                                <option value="2" selected>24 часа</option>
+                                <option value="3">48 часов</option>
+                                <option value="4">96 часов</option>
+                            </select>
+                            <label for="hours-exp">Выставить на срок</label>
+                        </div>
+
+                        <div class="input-field col s6">
+                            <label>
+                                <input type="checkbox" id="auto-renew" />
+                                <span>Автопродление</span>
+                            </label>
+                        </div>
+                    </div>
+
+
+
+                    <div class="row">
+                        <div class="col input-field s6">
+                            <input type="text" id="item-title">
+                            <label for="item-title">Название лота</label>
+
+                        </div>
+
+                        <div class="col input-field  s6">
+                            <input type="number" min="1" value="1" id="item_places">
+                            <label for="item_places">Количество мест (лотерея)</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col input-field s12">
+                            <textarea id="item-description" class="materialize-textarea"></textarea>
+                            <label for="item-description">Описание лота</label>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s6"><input type="number" min="0" id="bid_price"><label for="bid_price">Минимальная цена</label></div>
+                        <div class="input-field col s6"><input type="number" min="0" id="buy_price"><label for="buy_price">Цена выкупа</label></div>
+                    </div>
+
+
+                </div>
+                <div class="col s6">
+                    <div class="row">
+                        <div class="col s12">
+                            <button data-target="image-gallery" class="btn modal-trigger image-gallery-open">Галлерея</button>
+                            <input type="hidden" id="selected-img">
+                            <div class="selected-img">
+                                <img src="" alt="">
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            
+
+        </div>
+        <div class="modal-footer">
+            <label class="check">
+                <input type="checkbox" id="islottery" checked />
+                <span>Лотерея</span>
+            </label>
+            <label class="check">
+                <input type="checkbox" id="isauction" />
+                <span>Аукцион</span>
+            </label>
+            <a href="#!" class="modal-close waves-effect waves-green btn">Добавить</a>
+
+        </div>
+    </div>
+
+
+    <!-- галлерея картинок -->
+    <div id="image-gallery" class="modal">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col s2">
+                    <button class="btn btn-gallery-remove">Удалить</button>
+                </div>
+                <div class="col s2">
+                    <button class="btn btn-gallery-select">Выбрать</button>
+                </div>
+            </div>
+            <div class="image-gallery-list" id="image-gallery-list">
+                <ul>
+                </ul>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <h6>Изображение лота</h6>
+                    <form action="<?php echo plugin_dir_url( __FILE__ ).'uploadimage.php';?>" id="custom-image" class="dropzone">
+                        <div class="fallback">
+                            <input name="file" type="file" multiple />
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="progress" id="image-gallery-list-preloader">
+                <div class="indeterminate"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Закрыть</a>
+        </div>
+    </div>
 
     <!-- Распределение мест -->
     <div id="game-places" class="modal">
@@ -536,8 +704,10 @@
 
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script src="<?php echo plugin_dir_url( __FILE__ ).'main.js';?>"></script>
-
+    <script src="<?php echo plugin_dir_url( __FILE__ ).'assets/js/dropzone.js';?>"></script>
+    <script src="<?php echo plugin_dir_url( __FILE__ ).'assets/js/main.js';?>"></script>
+    <script src="<?php echo plugin_dir_url( __FILE__ ).'assets/js/mail.js';?>"></script>
+    <script src="<?php echo plugin_dir_url( __FILE__ ).'assets/js/imagegallery.js';?>"></script>
 </body>
 
 </html>

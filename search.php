@@ -177,17 +177,17 @@ $result = "";
             $win_place = $content[0]->win_place;
             $start_date =$content[0]->start_date; 
             $end_date =$content[0]->end_date;
-            $card_id = $content[0]->ID;
+            $item_in_slot_id = $content[0]->ID;
             
             $content = null;
             
             $result = [];
             if ($occupied_places>0){
-                  $content = $wpdb->get_results( "SELECT `wp_game`.*,`wp_users`.`avatar`,`wp_users`.`user_url` FROM `wp_game` INNER JOIN `wp_users` ON `wp_users`.`ID`=`wp_game`.`user_id` WHERE `card_id`='$card_id'" );
+                  $content = $wpdb->get_results( "SELECT `wp_game`.*,`wp_users`.`avatar`,`wp_users`.`user_url` FROM `wp_game` INNER JOIN `wp_users` ON `wp_users`.`ID`=`wp_game`.`user_id` WHERE `item_in_slot_id`='$card_id'" );
                   $result["list"]=$content;
             }
             
-            $result["card_id"]=$card_id;
+            $result["item_in_slot_id"]=$item_in_slot_id;
             $result["max_places"]=$max_places;
             $result["occupied_places"]=$occupied_places;
             $result["win_user_id"]=$win_user_id;
