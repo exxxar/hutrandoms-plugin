@@ -45,7 +45,7 @@
                         $(".users p.message").html("Адреса успешно добавлены!");
                         $(".users p.message").removeClass("error").addClass("success");
 
-                        $.post($("#server-path").attr("src") + "updatebd.php", {
+                        $.post($("#server-path").attr("src") + "php-scripts/updatebd.php", {
                                 "mail": emails[key]
                             },
                             function(a,b) {
@@ -85,7 +85,7 @@
                 $(".users .progress p").html(progress_current + "\\" + progress_max);
 
                 console.log($(this).serialize());
-                $.post($("#server-path").attr("src") + "mail.php",
+                $.post($("#server-path").attr("src") + "php-scripts/mail.php",
                     $(this).serialize(),
                     function(a, b) {
 

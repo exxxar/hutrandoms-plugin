@@ -11,7 +11,7 @@
    }
 
    function getCardCodeByID(id) {
-       $.post($("#server-path").attr("src") + "search.php", {
+       $.post($("#server-path").attr("src") + "php-scripts/search.php", {
            option: "card",
            id: id
 
@@ -39,7 +39,7 @@
 
            var ingame = $("#edited-in-game").is(":checked") ? 1 : 0;
 
-           $.post($("#server-path").attr("src") + "search.php", {
+           $.post($("#server-path").attr("src") + "php-scripts/search.php", {
                option: "update",
                id: id,
                price: price,
@@ -59,7 +59,7 @@
                "display": "flex"
            });
            var id = $(this).attr("data-id");
-           $.post($("#server-path").attr("src") + "search.php", {
+           $.post($("#server-path").attr("src") + "php-scripts/search.php", {
                option: "get",
                id: id
            }).then(function (a, b) {
@@ -89,7 +89,7 @@
            if (confirm("Данное действие удалит карточки с играми из базы данных! Продолжить?"))
                $("#my-card-list > .item .click-area.check").each(function (i, e) {
                    var id = $(e).attr("data-id");
-                   $.post($("#server-path").attr("src") + "search.php", {
+                   $.post($("#server-path").attr("src") + "php-scripts/search.php", {
                        option: "remove",
                        id: id
                    }).then(function (a, b) {
@@ -101,7 +101,7 @@
        $(".finish-cards").click(function () {
            $("#my-card-list > .item .click-area.check").each(function (i, e) {
                var id = $(e).attr("data-id");
-               $.post($("#server-path").attr("src") + "search.php", {
+               $.post($("#server-path").attr("src") + "php-scripts/search.php", {
                    option: "finish",
                    id: id
                }).then(function (a, b) {
@@ -114,7 +114,7 @@
        $(".beign-cards").click(function () {
            $("#my-card-list > .item .click-area.check").each(function (i, e) {
                var id = $(e).attr("data-id");
-               $.post($("#server-path").attr("src") + "search.php", {
+               $.post($("#server-path").attr("src") + "php-scripts/search.php", {
                    option: "begin",
                    id: id
                }).then(function (a, b) {
@@ -126,7 +126,7 @@
 
 
        $("#save-options").click(function () {
-           $("#card-preloader").css({
+           $("#huts-preloader").css({
                "display": "flex"
            });
            var procent = $("#procent").val();
@@ -135,7 +135,7 @@
            var rub = $("#rub").val();
            var year = $("#year option:selected").val();
 
-           $.post($("#server-path").attr("src") + "search.php", {
+           $.post($("#server-path").attr("src") + "php-scripts/search.php", {
                option: "options",
                procent: procent,
                title: title,
@@ -143,7 +143,7 @@
                rub: rub,
                year: year
            }).then(function (a, b) {
-               $("#card-preloader").css({
+               $("#huts-preloader").css({
                    "display": "none"
                });
                location.reload();
@@ -177,7 +177,7 @@
                "display": "block"
            });
            var id = $(this).attr("data-id");
-           $.post($("#server-path").attr("src") + "search.php", {
+           $.post($("#server-path").attr("src") + "php-scripts/search.php", {
                option: "places",
                id: id
 
@@ -209,7 +209,7 @@
            $("#card-selection-menu-btn").css({
                "display": "none"
            });
-           $.post($("#server-path").attr("src") + "search.php", {
+           $.post($("#server-path").attr("src") + "php-scripts/search.php", {
                option: "cardslist",
                page: $(this).attr("data-page-id"),
                lotsperpage: $("#lots-per-page").val(),
@@ -295,7 +295,7 @@
                "background-color": "#989898"
            });
 
-           $.post($("#server-path").attr("src") + "search.php", {
+           $.post($("#server-path").attr("src") + "php-scripts/search.php", {
                option: "addcard",
                id: $(this).attr("data-id"),
                card: $(this).attr("data-card"),
@@ -314,12 +314,12 @@
 
        $(document).on('click', '.player-popup-hint', function () {
            $(".player-popup-window").empty();
-           $("#card-preloader").css({
+           $("#huts-preloader").css({
                "display": "flex"
            });
            var top = ($(this).last().offset().top - 400);
            var left = ($(this).last().offset().left - 200);
-           $.post($("#server-path").attr("src") + "search.php", {
+           $.post($("#server-path").attr("src") + "php-scripts/search.php", {
                option: "card",
                id: $(this).attr("data-id")
 
@@ -334,7 +334,7 @@
                    "top": top + "px",
                    "left": left + "px"
                });
-               $("#card-preloader").css({
+               $("#huts-preloader").css({
                    "display": "none"
                });
            });
@@ -469,7 +469,7 @@
 
        $("#search").click(function (e) {
            e.preventDefault();
-           $("#card-preloader").css({
+           $("#huts-preloader").css({
                "display": "flex"
            });
            $('#cards-table').empty();
@@ -478,7 +478,7 @@
            });
            var form = $("#basic-player-search").serialize();
            console.log(form);
-           $.post($("#server-path").attr("src") + "search.php", {
+           $.post($("#server-path").attr("src") + "php-scripts/search.php", {
                option: "search",
                data: form
 
@@ -551,7 +551,7 @@
                }
 
 
-               $("#card-preloader").css({
+               $("#huts-preloader").css({
                    "display": "none"
                });
            });

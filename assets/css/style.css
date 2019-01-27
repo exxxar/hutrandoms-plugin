@@ -348,7 +348,7 @@ thead > th {
     margin: auto;
 }
 
-#card-preloader {
+#huts-preloader {
     position: fixed;
     display: none;
     align-items: center;
@@ -577,3 +577,9 @@ thead > th {
 .modal-footer label.check {
     margin-right: 20px;
 }
+
+.bottom-green-line {
+    border-bottom:3px solid lime !important;
+ }
+
+

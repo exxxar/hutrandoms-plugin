@@ -15,7 +15,7 @@ $(document).ready(function () {
                 $("#selected-img").val("");
             }
 
-            $.post($("#server-path").attr("src") + "imagegallery.php", {
+            $.post($("#server-path").attr("src") + "php-scripts/imagegallery.php", {
                 option: "delete",
                 path: $(el).attr("alt")
             }).then(function (a, b) {
@@ -29,6 +29,11 @@ $(document).ready(function () {
     });
 
     $(".btn-gallery-select").click(function () {
+        if ($("#image-gallery-list ul li.check img").length>1){
+             alert("Выберите только одну картинку!");
+            return;
+        }
+           
         $("#selected-img").val($("#image-gallery-list ul li.check img").attr("src"));
         $(".selected-img img").attr({
             "src": $("#image-gallery-list ul li.check img").attr("src")
@@ -52,7 +57,7 @@ $(document).ready(function () {
         $("#image-gallery-list-preloader").css({
             "display": "block"
         });
-        $.post($("#server-path").attr("src") + "imagegallery.php", {
+        $.post($("#server-path").attr("src") + "php-scripts/imagegallery.php", {
             option: "list"
 
         }).then(function (a, b) {
